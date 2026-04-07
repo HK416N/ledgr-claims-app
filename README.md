@@ -1,12 +1,138 @@
-# ledgr - Claims App
+# Background
 
-### *READ BEFORE WRITING ANY CODE*
+## Ledgr - The Expense Claim Management App
 
-## Background (wip)
+Employees who travel frequently often need to manually key in receipt details into a claims system, which is time-consuming and inefficient.
+
+This application is designed to simplify that process by structuring receipt data into a clean, reusable format for claims submission.
+
+This application is also designed around 3 build phases:
+
+Phase 1: MVP
+
+Stretch goals:
+
+Phase 2: Image handling
+
+Phase 3: OCR via tesseract.js
+
+## Current Scope - MVP
+
+The immediate deliverable focuses on **manual input of receipt data** rather than OCR or image uploads. This ensures:
+- A stable and reliable data model
+- Clean API design and validation
+- Proper handling of currency conversion and categorisation
+
+Must have (Phase 1):
+1. JWT-based authentication (Signup / Login / Logout) 
+2. Editable extracted data (OCR is not trusted blindly) 
+3. Automatic SGD conversion using FX rate 
+4. Claim history dashboard
+5. Category tagging system
+
+### What the App Currently Solves
+
+- Allows users to manually input receipt details
+- Structures data for easy claims submission
+- Converts foreign currency into SGD
+- Stores and organises claims for retrieval
+
+### Planned Enhancements
+
+1. Receipt image upload
+2. OCR-based data extraction
+3. Editable OCR results before saving
+
+The system is designed with **accuracy, editability, and scalability** in mind — starting with a strong manual workflow before introducing OCR automation.
+
+## Tech Stack
+
+Github monorepo - frontend & backend
+Frontend -> Netlify
+Backend -> Render/Railway
+
+### Frontend
+
+**React**
+**React Router** 
+**Tailwind CSS** 
 
 
-[generate random string for JWT_SECRET](https://dev.to/tkirwa/generate-a-random-jwt-secret-key-39j4)
-using terminal: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+### Backend 
+
+**Node.js (Bun runtime)** 
+**Express** 
+**MongoDB + Mongoose** 
+**JWT Authentication** 
+**Morgan (logging)** 
+
+### OCR & Data Processing
+
+**tesseract.js** (OCR text extraction) 
+**Regex parsing** (structured data extraction)
+
+## User Stories
+
+### Sign in
+
+As a user I want to:
+ - enter my email and my password into fields and click `sign in` or press `Enter` on my keyboard to log in.
+ - be able to sign up for a new account if i do not have an existing account
+reset my password if I have forgotten it.
+
+### Sign up
+
+As a user I want to:
+- enter the email I wish to sign up with
+- enter the password I wish to use
+- enter the password I wish to use a second time as a confirmation
+- click the `Submit` button or press `Enter` on my keyboard to complete the sign up process 
+
+### Dashboard
+
+As a user I want to:
+- see the `dashboard` after I complete the `sign in`/ `sign up` process
+- see `receipt/invoice number`, `date`, `description`, `category`, `original currency value`, `fx rate` and `SGD equivalent` and actions I can take to interact with individual claims.
+- be able to interact with each claim on the list by clicking one of 3 buttons, `Complete`, `Edit` or `Delete`.
+- see a detailed view of the claim that I clicked `View` on.
+- be able to delete any claim entry by clicking `Delete`
+- be able to remove completed claims from the list by clicking `Complete`
+- see a confirmation window upon clicking `Delete`
+- be able to create new claims when I click a `New Claim` button
+
+### New Claim
+
+As a user I want to:
+- enter `receipt/invoice no.`, `receipt date`, `currency`, `receipt amount`, `fx rates`, `tax` and a short `description` of the expense.
+- see `SGD` value auto converted from the `original currency` and `fx rates`
+- be able to go back to the `dashboard`
+- cancel the process with a cancel button
+
+### Claim Details
+
+As a user, I want to see:
+- the `receipt/ invoice number` and `date` of the receipt so I am able to confirm that I am viewing the correct receipt
+- see all details of the receipt and be able to copy them to clipboard for easy entry into a claims portal
+- be able to edit the details to correct any erroneous entries
+- be able to delete the claim if I accidentally submit the details of the wrong receipt or accidentally enter the same receipt twice
+- be able to check of the entry as complete by clicking on a `complete` button
+
+### Claims History
+
+As a user I want to:
+- see a list of my completed claims in a claims history page so I can track my completed claims
+- see `receipt/invoice number`, `date`, `description`, `category`, `original currency value`, `fx rate` and `SGD equivalent`.
+
+**I expect to be unable to delete or edit claims after completion**
+
+### Edit claim
+
+As a user I want to:
+- see a prefilled form of the claim that I wish to edit
+- I want to be able to change the details in this form to edit the claim details
+
+
+---
 
 ## Response
 Every endpoint will return either of these: 
@@ -31,24 +157,12 @@ or
 ```
 Check `res.success` first. If `false`, use `res.code` to check for specific errors for error handling on the frontend.
 
-Within `data`:
-```json
-//success
-{
-    "success": true,
-    "data": {
-        "token": "token-string",
-        "user": {
-            "user-object"
-            }
-    }
-}
-```
----  
+---
 
 ## User Object
 
 `"user"` object returned inside `data` upon `"success": true`
+
 for:
 `POST /api/auth/signup`, `POST /api/auth/login`
 
@@ -59,6 +173,7 @@ for:
         "email": "johnsmith87@gmail.com"
       }
 ```
+
 | Field | Type | Rule |
 |---|---|---|
 | `_id` | string | MongoDB generated |
@@ -76,20 +191,28 @@ for:
 - `POST /api/claims`
 - `PUT /api/claims/:id`
 ---
+
+Exchange data is embedded inside Receipt in MongoDB. The API flattens it into
+one object — the frontend never needs to know about the two-level document structure.
+
 ```json
 {
-    "_id":              "683a1f...",
-    "receiptNumber":    "INV-8801",
-    "date":             "2026-04-01",
-    "description":      "Client lunch at Raffles Hotel",
-    "totalOriginal":    320.00,
-    "currencyOriginal": "MYR",
-    "tax":              18.40,
-    "fxRate":           0.298000,
-    "fxSource":         "API",
-    "totalSGD":         95.36,
-    "imageUrl":         null,
-    "createdAt":        "2026-04-01T08:23:11.000Z"
+  "_id":              "683a1f...",
+  "receiptNumber":    "INV-8801",
+  "date":             "2026-04-01T00:00:00.000",
+  "description":      "Client lunch at Raffles Hotel",
+  "totalOriginal":    320.00,
+  "currencyOriginal": "MYR",
+  "tax":              18.40,
+  "fxRate":           0.298000,
+  "fxSource":         "API",
+  "totalSGD":         95.36,
+  "isOverseas":       true,
+  "status":       false,
+  "category":         "Uncategorized",
+  "categoryId":       null,
+  "imageUrl":         null,
+  "createdAt":        "2026-04-01T08:23:11.000Z"
 }
 ```
 
@@ -105,9 +228,88 @@ for:
 | `fxRate` | number | SGD per 1 unit of original currency. Up to 6dp. |
 | `fxSource` | string | `"API"` or `"MANUAL"`. |
 | `totalSGD` | number | Server-computed: `totalOriginal` x `fxRate` to 2dp. |
-| `imageUrl` (optional) | string\|null | `null` until implementation of image capabilities|
-| `createdAt` | string | Full ISO timestamp from Mongoose. For sorting only. |
+| `isOverseas` | String | Server-computed with `if (currencyOriginal !== "SGD")`. Never sent by client. |
+| `status` | String | Default `false`. User sets to `true` once submitted to external portal. Left as string to accomodate future changes. |
+| `category` | string | optional | Category name for display. Defaults to `"Uncategorized"` if no category assigned. Never `null` in the response — always a string. |
+| `categoryId` (optional) | string\|null | MongoDB ObjectId of the Category document. `null` if no category assigned. |
+| `imageUrl` | string\|null | optional | `null` until implementation of image capabilities |
+| `createdAt` | string | computed | Full ISO timestamp from Mongoose. For sorting only. |
+
+### Embedded Exchange sub-document
+
+Exchange data lives **inside** the Receipt document in MongoDB — it is not a
+separate collection. There is no `Exchange.js` model file.
+
+The Mongoose schema for the embedded object:
+
+```js
+exchange: {
+    fxRate: { 
+        type: Number, 
+        required: true 
+        },
+    convertedAmount: { 
+        type: Number, 
+        required: true 
+        },
+}
+```
+
+**Flatten for frontend.**
+
 ---
+
+## Category Object
+
+for: 
+
+- `GET /api/categories` 
+- `POST /api/categories`
+
+```json
+{
+    "success": true,
+    "data": [
+        { 
+            "_id": "64a3f1...", 
+            "name": "Meals" 
+            },
+        { 
+            "_id": "64a3f2...", 
+            "name": "Travel" 
+            },
+        { 
+            "_id": "64a3f3...", 
+            "name": "Software" 
+        }
+  ]
+}
+```
+
+### Field Rules
+
+| Field | Type | Rule |
+|-------|------|------|
+| `_id` | string | MongoDB ObjectId serialised to string. |
+| `name` | string | User-defined label. |
+
+### Relationship
+
+One user has many categories. One user has many receipts. One category has many
+receipts. Category is the link between a user's categories and a user's receipts —
+it is reusable across many receipts, which is why it is a separate collection
+rather than an embedded field.
+
+`userId` on Category scopes every category to its owner — User A's "Meals" and
+User B's "Meals" are entirely separate Category documents.
+
+### What is never returned
+
+`userId` is used server-side for ownership checks only. It is never included in
+the Category response sent to the frontend.
+
+---
+
 ## Date (`createdAt` - for sorting)
 
 - Store in MongoDB as `Date` type - MongoDB stores ISO format "YYYY-MM-DDTHH:mm:ss.sssZ" 
@@ -138,23 +340,30 @@ value={date.split("T")[0]}
 
 QoL change (can be stretch goal): convert to local date format
 
+---
+
 ## Request Body
+
 for: 
-- `POST /api/claims`
+
+- `POST /api/claims` 
 - `PUT /api/claims/:id`
 
 ```json
 {
-    "receiptNumber":    "INV-8801",
-    "date":             "2026-04-01",
-    "description":      "Client lunch",
-    "totalOriginal":    320.00,
-    "currencyOriginal": "MYR",
-    "tax":              18.40,
-    "fxRate":           0.298000,
-    "fxSource":         "API"
+  "receiptNumber":    "INV-8801",
+  "date":             "2026-04-01",
+  "description":      "Client lunch at Raffles Hotel",
+  "totalOriginal":    320.00,
+  "currencyOriginal": "MYR",
+  "tax":              18.40,
+  "fxRate":           0.298000,
+  "fxSource":         "API",
+  "status":       false,
+  "categoryId":       "64a3f1..."
 }
 ```
+
 | Field | Type | Rule |
 |---|---|---|
 | `receiptNumber` (optional) | string | Use `""` for empty strings. |
@@ -165,16 +374,32 @@ for:
 | `tax` (optional) | number | `0` if not entered. |
 | `fxRate` | number | SGD per 1 unit of original currency. Up to 6dp. |
 | `fxSource` | string | `"API"` or `"MANUAL"`. |
+| `status` | String | Default `pending`. User sets to `complete` once submitted to external portal. Left as string to accomodate future changes. |
+| `category` | string | optional | Category name for display. Defaults to `"Uncategorized"` if no category assigned. Never `null` in the response — always a string. |
+| `categoryId` (optional) | string\|null | MongoDB ObjectId of the Category document. `null` if no category assigned. |
 
-NOTE:  
-1. `totalSGD` is never sent by the client as it is server-computed using `totalOrginal x fxRate` (to 2dp)
-2. `imageUrl` is not part of MVP and thus will be handled separately.
+
+- `categoryId` is optional — omit or send `null` if no category selected. Controller defaults `category` to `"Uncategorized"` in the response when `categoryId` is absent
+- `status` defaults to `complete` if omitted
+- **Completed claims are locked** — PUT and DELETE on a claim where `status === complete` return 403 `CLAIM_IS_COMPLETE`.
+
+### POST /api/categories
+
+```json
+{ "name": "Meals" }
+```
+
+- `userId` is set server-side from `req.user._id` — never sent by client
+
+---
 
 ## FX Rate Precision
 - Store as `Number` in MongoDB at 6dp
 - Sent as `Number` in JSON at 6dp
 - Displayed as 4dp in Dashboard claims list
 - Displaed as 6dp in Claim Details 
+
+---
 
 ## JWT
 
@@ -185,6 +410,8 @@ Authorization: Bearer <token>
 Token payload: { _id, name, email }
 Token Expiry: 7 days (do this last)
 `verifyToken` uses `req.user._id` for comparing with Mongoose ObjectId where `req.user = { _id, name, email }`
+
+---
 
 ## ERROR_CODE
 
@@ -202,27 +429,35 @@ Token Expiry: 7 days (do this last)
 | `FORBIDDEN` | 403 | Claim exists but belongs to a different user |
 | `SERVER_ERROR` | 500 | Unhandled server exception |
 
-## ROUTES
+---
+
+## Route Paths
 
 ### Backend
 | Method | Path | Auth |
 |--------|------|------|
-| POST | `/api/auth/signup`| Public |
+| POST | `/api/auth/signup` | Public |
 | POST | `/api/auth/login` | Public |
 | GET | `/api/claims` | Required |
 | GET | `/api/claims/:id` | Required |
 | GET | `/api/fx/latest` | Required |
+| GET | `/api/categories` | Required |
 | POST | `/api/claims` | Required |
 | PUT | `/api/claims/:id` | Required |
 | DELETE | `/api/claims/:id` | Required |
- 
+| POST | `/api/categories` | Required |
+| DELETE | `/api/categories/:id` | Required |
+
 ### Frontend
-| Path | Page |
-|------|------|
-| `/login` | Login | 
+| Path | Page | Owner |
+|------|------|-------|
+| `/login` | Login |
 | `/signup` | Signup |
 | `/dashboard` | Dashboard |
+| `/history` | Claims History |
 | `/claims/:id` | Claim Detail |
 | `/claims/new` | New Claim |
 | `/claims/:id/edit` | Edit Claim |
+
+---
 
