@@ -3,6 +3,7 @@
 const dotenv = require("dotenv");
 dotenv.config();
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const { faker } = require("@faker-js/faker");
 
@@ -25,27 +26,27 @@ connect();
 
 const createUser = async () => {
     const user = await User.create({
-        name: faker.person.fullName(),
-        email: faker.internet.email(),
-        hashedPassword: "hashedpassword123",
+        name: "Demo User",
+        email: "demo@example.com",
+        hashedPassword: bcrypt.hashSync("Password123", 10),
     });
     console.log("User created: ", user);
     return user;
-}
+};
 
 
 const createCategories = async (user) => {
     const categories = await Category.create([
         {
+            name: "Meals",
+            userId: user._id,
+        },
+        {
             name: "Travel",
             userId: user._id,
         },
         {
-            name: "Food",
-            userId: user._id,
-        },
-        {
-            name: "Office Supplies",
+            name: "Software Subscriptions",
             userId: user._id,
         },
     ]);
@@ -53,42 +54,108 @@ const createCategories = async (user) => {
     return categories;
 }
 
-const createReceipt = async (user, categories) => {
+  const createReceipts = async (user, categories) => {
+      const [meals, travel, software] = categories; //relook at this
 
-    const totalOriginal = faker.finance.amount({ min: 10, max: 1000, dec: 2 });
-    const fxRate = faker.finance.amount({ min: 0.5, max: 1.5, dec: 4 });
-
-    const receipts = await Receipt.create(
-        {
-            userId: user._id,
-            receiptNumber: faker.string.numeric(10),
-            date: faker.date.past(),
-            totalOriginal: totalOriginal,
-            currencyOriginal: faker.finance.currencyCode(),
-            tax: faker.finance.amount({ min: 0, max: 100, dec: 2 }),
-            description: faker.lorem.sentence(),
-            status: faker.helpers.arrayElement(['PENDING', 'COMPLETE']),
-            categoryId: categories[faker.number.int({ min: 0, max: categories.length - 1 })]._id,
-            exchange: {
-                fxRate: fxRate,
-                fxSource: faker.helpers.arrayElement(['API', 'MANUAL']),
-                convertedAmount: totalOriginal * fxRate,
-                conversionDate: faker.date.past(),
-            }
-        }
-    );
-    console.log("Receipts created: ", receipts);
-    return receipts;
-}
+      const receipts = await Receipt.insertMany([
+          {
+              userId:           user._id,
+              receiptNumber:    "INV-8801",
+              date:             new Date("2026-04-01"),
+              totalOriginal:    320.00,
+              currencyOriginal: "MYR",
+              description:      "Client lunch",
+              location:         "OVERSEAS",
+              categoryId:       meals._id,
+              exchange: {
+                  fxRate:          0.2980,
+                  convertedAmount: 95.36,
+                  fxSource:        "API",
+                  conversionDate:  new Date("2026-04-01"),
+              },
+          },
+          {
+              userId:           user._id,
+              receiptNumber:    "5678912",
+              date:             new Date("2026-03-28"),
+              totalOriginal:    892.80,
+              currencyOriginal: "SGD",
+              description:      "Office supplies",
+              location:         "SINGAPORE",
+              categoryId:       software._id,
+              exchange: {
+                  fxRate:          1.0000,
+                  convertedAmount: 892.80,
+                  fxSource:        "MANUAL",
+                  conversionDate:  new Date("2026-03-28"),
+              },
+          },
+          {
+              userId:           user._id,
+              receiptNumber:    "1234567",
+              date:             new Date("2026-03-26"),
+              totalOriginal:    699.00,
+              currencyOriginal: "USD",
+              description:      "AWS subscription",
+              location:         "OVERSEAS",
+              categoryId:       software._id,
+              exchange: {
+                  fxRate:          1.2858,
+                  convertedAmount: 898.78,
+                  fxSource:        "API",
+                  conversionDate:  new Date("2026-03-26"),
+              },
+          },
+          {
+              userId:           user._id,
+              receiptNumber:    "INV-8802",
+              date:             new Date("2026-03-30"),
+              totalOriginal:    24.50,
+              currencyOriginal: "SGD",
+              description:      "Grab to airport",
+              location:         "SINGAPORE",
+              status:           "COMPLETE",
+              categoryId:       travel._id,
+              exchange: {
+                  fxRate:          1.0000,
+                  convertedAmount: 24.50,
+                  fxSource:        "MANUAL",
+                  conversionDate:  new Date("2026-03-30"),
+              },
+          },
+          {
+              userId:           user._id,
+              receiptNumber:    "INV-8803",
+              date:             new Date("2026-04-03"),
+              totalOriginal:    210.00,
+              currencyOriginal: "MYR",
+              description:      "Team dinner",
+              location:         "OVERSEAS",
+              categoryId:       meals._id,
+              exchange: {
+                  fxRate:          0.2980,
+                  convertedAmount: 62.58,
+                  fxSource:        "API",
+                  conversionDate:  new Date("2026-04-03"),
+              },
+          },
+      ]);
+      console.log("Receipts created: ", receipts);
+      return receipts;
+  };
 
 
 const runQueries = async () => {
+    //delete existing data
+    await Receipt.deleteMany({});
     await Category.deleteMany({});
-    await User.deleteMany({});
+    await User.deleteMany({email: "demo@example.com"});
+
 
     console.log("Queries running.");
 
+    //create new data
     const newUser = await createUser();
     const categories = await createCategories(newUser);
-    await createReceipt(newUser, categories);
+    await createReceipts(newUser, categories);
 };

@@ -57,16 +57,21 @@ const receiptSchema = new Schema({
         type: String,
         default: '',
     },
+    location: {
+        type: String,
+        enum: ['OVERSEAS', 'SINGAPORE'],
+        default: 'SINGAPORE',
+    },
     status: {
         type: String,
         enum: [ 'PENDING', 'COMPLETE'],
-        default: [ 'PENDING' ], 
+        default: 'PENDING', 
     },
     exchange: exchangeSchema,
     categoryId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
-        default: null,
+        default: "null",
     }
 }, { timestamps: true }); //https://mongoosejs.com/docs/api/schema.html look at options
 

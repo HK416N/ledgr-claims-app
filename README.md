@@ -207,7 +207,7 @@ one object — the frontend never needs to know about the two-level document str
   "fxRate":           0.298000,
   "fxSource":         "API",
   "totalSGD":         95.36,
-  "isOverseas":       true,
+  "location":       "OVERSEAS",
   "status":       false,
   "category":         "Uncategorized",
   "categoryId":       null,
@@ -228,7 +228,7 @@ one object — the frontend never needs to know about the two-level document str
 | `fxRate` | number | SGD per 1 unit of original currency. Up to 6dp. |
 | `fxSource` | string | `"API"` or `"MANUAL"`. |
 | `totalSGD` | number | Server-computed: `totalOriginal` x `fxRate` to 2dp. |
-| `isOverseas` | String | Server-computed with `if (currencyOriginal !== "SGD")`. Never sent by client. |
+| `location` | String | Server-computed with `if (currencyOriginal !== "SGD") -> "OVERSEAS"`. Never sent by client. |
 | `status` | String | Default `false`. User sets to `true` once submitted to external portal. Left as string to accomodate future changes. |
 | `category` | string | optional | Category name for display. Defaults to `"Uncategorized"` if no category assigned. Never `null` in the response — always a string. |
 | `categoryId` (optional) | string\|null | MongoDB ObjectId of the Category document. `null` if no category assigned. |
@@ -359,7 +359,7 @@ for:
   "tax":              18.40,
   "fxRate":           0.298000,
   "fxSource":         "API",
-  "status":       false,
+  "status":          "PENDING",
   "categoryId":       "64a3f1..."
 }
 ```
@@ -374,7 +374,7 @@ for:
 | `tax` (optional) | number | `0` if not entered. |
 | `fxRate` | number | SGD per 1 unit of original currency. Up to 6dp. |
 | `fxSource` | string | `"API"` or `"MANUAL"`. |
-| `status` | String | Default `pending`. User sets to `complete` once submitted to external portal. Left as string to accomodate future changes. |
+| `status` | String | Default `PENDING`. User sets to `COMPLETE` once submitted to external portal. Left as string to accomodate future changes. |
 | `category` | string | optional | Category name for display. Defaults to `"Uncategorized"` if no category assigned. Never `null` in the response — always a string. |
 | `categoryId` (optional) | string\|null | MongoDB ObjectId of the Category document. `null` if no category assigned. |
 
