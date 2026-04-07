@@ -6,6 +6,7 @@ const app = express();
 const cors = require('cors');
 const logger = require('morgan');
 require('./db')
+const { errorHandler } = require('./middleware/errorHandler');
 
 //? Import routers
 const authRouter = require('./routes/authRoutes');
@@ -21,6 +22,8 @@ app.use(logger('dev'));
 app.use('/api/auth', authRouter);
 app.use('/api/claims', claimsRouter);
 app.use('/api/fx', fxRouter);
+
+app.use(errorHandler);
 
 // Start the server and listen on port 3000
 app.listen(3000, () => {
