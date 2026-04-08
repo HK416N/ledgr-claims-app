@@ -3,7 +3,7 @@ const router = express.Router();
 
 const User = require('../models/user');
 
-const verifyToken = require('../middleware/verify-token');
+const verifyToken = require('../middleware/verifyToken');
 
 router.get('/', verifyToken, async (req, res) => {
   try {
@@ -11,7 +11,7 @@ router.get('/', verifyToken, async (req, res) => {
 
     res.json(users);
   } catch (err) {
-    res.status(500).json({ err: err.message });
+    c
   }
 });
 

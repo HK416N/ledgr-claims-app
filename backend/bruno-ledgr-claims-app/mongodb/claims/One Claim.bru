@@ -1,0 +1,19 @@
+meta {
+  name: One Claim
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{MONGODB_BASE_URL}}/api/claims/:id
+  body: none
+  auth: none
+}
+
+params:path {
+  id: 69d5b9870e62efc232c4e9ad
+}
+
+headers {
+  Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWQ2NDE0MTdjMjc4ZjdiNWQ0ZjYxNzUiLCJuYW1lIjoiTWF4IiwiZW1haWwiOiJtYXhAZXhhbXBsZS5jb20iLCJpYXQiOjE3NzU2NDk1NDJ9.SlLQeOnzkE7Q2ICXsTpCY5K-_d9VfLAK_PBbUEM_uvs
+}

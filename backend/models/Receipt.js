@@ -15,7 +15,7 @@ const exchangeSchema = new Schema({
     fxSource: {
         type: String,
         enum: ['API','MANUAL'], //https://mongoosejs.com/docs/validation.html
-        default: ['API']
+        default: 'API',
     }, 
     conversionDate: {
         type: Date,

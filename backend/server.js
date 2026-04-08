@@ -1,17 +1,23 @@
+
+
 // npm
 const dotenv = require('dotenv');
 dotenv.config();
 const express = require('express');
+const mongoose = require('mongoose');
 const app = express();
 const cors = require('cors');
 const logger = require('morgan');
 require('./db')
-const { errorHandler } = require('./middleware/errorHandler');
+const  errorHandler  = require('./middleware/errorHandler');
+
+mongoose.set('debug', true);
 
 //? Import routers
 const authRouter = require('./routes/authRoutes');
 const claimsRouter = require('./routes/claimsRoutes');
 const fxRouter = require('./routes/fxRoutes');
+const categoryRouter = require('./routes/categoryRoutes');
 
 // Middleware
 app.use(cors());
@@ -22,6 +28,7 @@ app.use(logger('dev'));
 app.use('/api/auth', authRouter);
 app.use('/api/claims', claimsRouter);
 app.use('/api/fx', fxRouter);
+app.use('/api/categories', categoryRouter);
 
 app.use(errorHandler);
 

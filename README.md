@@ -146,10 +146,10 @@ Every endpoint will return either of these:
 }
 ```
 or
-```json
 **Error**
-{
+```json
     //error
+{
     "success": false,
     "error": "an error message",
     "code": "ERROR_CODE" //refer to ERROR_CODE section
@@ -461,3 +461,8 @@ Token Expiry: 7 days (do this last)
 
 ---
 
+## Attributions
+
+- [Backend](./backend/attributions.md)
+
+- Frontend
