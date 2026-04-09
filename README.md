@@ -146,8 +146,10 @@ Every endpoint will return either of these:
 }
 ```
 or
+
 **Error**
 ```json
+{
     //error
 {
     "success": false,
