@@ -71,13 +71,11 @@ const receiptSchema = new Schema({
     categoryId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
-        default: "null",
+        default: null,
     }
 }, { timestamps: true }); //https://mongoosejs.com/docs/api/schema.html look at options
 
 //flatten
-
-
 
 const Receipt = model('Receipt', receiptSchema);
 

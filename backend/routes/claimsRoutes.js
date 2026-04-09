@@ -1,19 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const verifyToken = require('../middleware/verifyToken');
+const { getAllClaims, getClaimById } = require('../controllers/claimsController');
 
-router.get('/', verifyToken, (req, res) => {
-    res.json({
-        success: true,
-        data: []
-    }); //placeholder, remember to add error case, pass data
-});
-
-router.get('/:id', verifyToken, (req, res) => {
-    res.json({
-        success: true,
-        data: {},        
-    })
-});
+router.get('/', verifyToken, getAllClaims);
+router.get('/:id', verifyToken, getClaimById);
 
 module.exports = router;

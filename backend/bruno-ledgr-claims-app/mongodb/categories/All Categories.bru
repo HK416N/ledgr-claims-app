@@ -1,17 +1,13 @@
 meta {
-  name: One Claim
+  name: All Categories
   type: http
   seq: 1
 }
 
 get {
-  url: {{MONGODB_BASE_URL}}/api/claims/:id
+  url: {{MONGODB_BASE_URL}}/api/categories
   body: none
   auth: none
-}
-
-params:path {
-  id: 69d5b9870e62efc232c4e9ad
 }
 
 headers {

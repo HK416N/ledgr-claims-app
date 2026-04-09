@@ -1,15 +1,29 @@
 meta {
-  name: New Claim
+  name: New Claim wip
   type: http
   seq: 1
 }
 
 post {
   url: {{MONGODB_BASE_URL}}/api/claims
-  body: none
+  body: json
   auth: none
 }
 
 headers {
-  Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWQ2NDE0MTdjMjc4ZjdiNWQ0ZjYxNzUiLCJuYW1lIjoiTWF4IiwiZW1haWwiOiJtYXhAZXhhbXBsZS5jb20iLCJpYXQiOjE3NzU2NDk1NDJ9.SlLQeOnzkE7Q2ICXsTpCY5K-_d9VfLAK_PBbUEM_uvs
+  Authorization: BEARER eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OWQ1Yjk4NjBlNjJlZmMyMzJjNGU5YTIiLCJuYW1lIjoiRGVtbyBVc2VyIiwiZW1haWwiOiJkZW1vQGV4YW1wbGUuY29tIiwiaWF0IjoxNzc1NzAyNjEzfQ.ePvogb3BeBf3auciHdYexqaq1nhYOedn5e-cfHziv38
+}
+
+body:json {
+  {
+    "receiptNumber": "INV-9901",
+    "date": "2026-04-09",
+    "totalOriginal": 450.00,
+    "currencyOriginal": "MYR",
+    "tax": 27.00,
+    "description": "Client dinner at Lavo",
+    "fxRate": 0.298000,
+    "fxSource": "API",
+    "categoryId": null
+  }
 }
