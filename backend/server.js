@@ -17,7 +17,9 @@ const fxRouter = require('./routes/fxRoutes');
 const categoryRouter = require('./routes/categoryRoutes');
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173'
+}));
 app.use(express.json());
 app.use(logger('dev'));
 
