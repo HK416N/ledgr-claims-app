@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router";
-import { Eye, Trash2, Check, Filter } from "lucide-react";
+import { Eye, Trash2, Check } from "lucide-react";
 import { getAllClaims } from '../services/claimsService'
 import { getCategories } from '../services/categorySerivce'
 import { sharedStyles } from "../constants/styles";
@@ -132,8 +132,8 @@ const Dashboard = () => {
                                 <th className="px-4 py-3">Category</th>
                                 <th className="px-4 py-3 text-right">Original</th>
                                 <th className="px-4 py-3 text-right">FX Rate</th>
-                                <th className="px-4 py-3 text-right">SGD</th>
-                                <th className="px-4 py-3">Actions</th>
+                                <th className="px-4 py-3 text-center">SGD</th>
+                                <th className="px-4 py-3 text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
@@ -181,7 +181,7 @@ const Dashboard = () => {
                                     </td>
 
                                     {/* sgd amount and location badge - extra confirmation for converted sgd values*/}
-                                    <td className="px-4 py-3 text-right font-semibold text-sgd-blue">
+                                    <td className="px-4 py-3 text-center font-semibold text-sgd-blue">
                                         S$ {claim.totalSGD.toFixed(2)}
                                         <span className={`ml-2 text-xs px-1.5 py-0.5 rounded font-medium
                                             ${claim.location === 'OVERSEAS'
@@ -191,20 +191,20 @@ const Dashboard = () => {
                                         </span>
                                     </td>
                                     <td className="px-4 py-3">
-                                        <div className="flex item-gray-400 hover:text-green-600 gap-2">
+                                        <div className="flex items-center gap-4">
                                             {/* completed - wip */}
-                                            <button className="flex item-gray-400 hover:text-green-600">
+                                            <button className="text-gray-400 hover:text-green-600">
                                                 <Check size={15}></Check>
                                             </button>
 
                                             {/* Claims details */}
                                             <Link to={`/claims/${claim._id}`}
-                                                className="text-gray-400 hover:text-gray-700 gap-2">
+                                                className="text-gray-400 hover:text-gray-700">
                                                 <Eye size={15}></Eye>
                                             </Link>
 
                                             {/* delete claim - wip */}
-                                            <button className="text-gray-400 hover:text-red-500 gap-2">
+                                            <button className="text-gray-400 hover:text-red-500">
                                                 <Trash2 size={15}></Trash2>
                                             </button>
                                         </div>
