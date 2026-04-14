@@ -66,9 +66,9 @@ const ClaimsHistory = () => {
                                 <th className="px-4 py-3">Date</th>
                                 <th className="px-4 py-3">Description</th>
                                 <th className="px-4 py-3">Category</th>
-                                <th className="px-4 py-3 text-right">Original</th>
+                                <th className="px-4 py-3 text-left">Original</th>
                                 <th className="px-4 py-3 text-right">FX Rate</th>
-                                <th className="px-4 py-3 text-right">SGD</th>
+                                <th className="px-4 py-3 text-center">SGD</th>
                             </tr>
                         </thead>
 
@@ -101,7 +101,7 @@ const ClaimsHistory = () => {
                                     </td>
 
                                     {/* original amount with currency and fxSource badge */}
-                                    <td className="px-4 py-3 text-right text-gray-800">
+                                    <td className="px-4 py-3 text-left text-gray-800">
                                         {claim.currencyOriginal} {claim.totalOriginal.toFixed(2)}
                                         <span className={`ml-2 text-xs px-1.5 py-0.5 rounded font-medium
                                             ${claim.fxSource === 'API'
@@ -117,7 +117,7 @@ const ClaimsHistory = () => {
                                     </td>
 
                                     {/* sgd amount and location badge - extra confirmation for converted sgd values*/}
-                                    <td className="px-4 py-3 text-right font-semibold text-sgd-blue">
+                                    <td className="px-4 py-3 text-center font-semibold text-sgd-blue">
                                         S$ {claim.totalSGD.toFixed(2)}
                                         <span className={`ml-2 text-xs px-1.5 py-0.5 rounded font-medium
                                             ${claim.location === 'OVERSEAS'

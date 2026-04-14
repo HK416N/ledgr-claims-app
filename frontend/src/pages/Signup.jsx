@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router";
 import { toast } from "react-toastify";
-import { login } from "../services/authService";
+import { signup } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 import { sharedStyles } from "../constants/styles";
 
 const Signup = () => {
-    const [formData, setFormData] = useState({ email: '', password: '' });
+    const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '', });
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
     const { login: saveLogin } = useAuth();
@@ -31,9 +31,6 @@ const Signup = () => {
         saveLogin(result.data.token, result.data.user);
         navigate('/dashboard');
     }
-
-    saveLogin(result.data.token, result.data.user);
-    navigate('dashboard');
 
     return (
         <div className={sharedStyles.authPage}>
@@ -99,7 +96,7 @@ const Signup = () => {
 
                 <p className={sharedStyles.footer}>
                     Already have an account?{' '}
-                    <Link className={sharedStyles.link} to="/login">
+                    <Link className="text-sm text-gray-500 mt-4 text-center" to="/login">
                         Sign in
                     </Link>
                 </p>

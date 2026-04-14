@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, PlusCircle, ChevronRight, LogOut, Grid, History } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, ChevronRight, LogOut, Receipt, History } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const NavBar = () => {
@@ -11,7 +11,7 @@ const NavBar = () => {
             <aside className="w-[228px] bg-sidebar flex flex-col flex-shrink-0">
                 {/* Logo */}
                 <div className="flex items-center gap-2 px-5 py-5">
-                    <Grid size={18} className="text-white" />
+                    <Receipt size={18} className="text-white" />
                     <span className="text-white text-xs font-semibold tracking-widest uppercase">Expense Claim</span>
                 </div>
 
