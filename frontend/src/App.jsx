@@ -10,9 +10,9 @@ import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import ClaimsHistory from './pages/ClaimsHistory';
 import ClaimDetails from './pages/ClaimDetails';
+import NewClaim from './pages/NewClaim';
 
-// Stubs
-const NewClaim = () => <p>New Claim — coming soon</p>;
+//IMPORT EDIT CLAIMS AND REMOVE THIS WHEN DONE WITH EDITCALIM
 const EditClaim = () => <p>Edit Claim — coming soon</p>;
 
 const App = () => {
