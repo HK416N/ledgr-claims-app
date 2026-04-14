@@ -66,7 +66,7 @@ const ClaimsHistory = () => {
                                 <th className="px-4 py-3">Date</th>
                                 <th className="px-4 py-3">Description</th>
                                 <th className="px-4 py-3">Category</th>
-                                <th className="px-4 py-3 text-right">Original</th>
+                                <th className="px-4 py-3 text-left">Original</th>
                                 <th className="px-4 py-3 text-right">FX Rate</th>
                                 <th className="px-4 py-3 text-right">SGD</th>
                             </tr>
@@ -101,7 +101,7 @@ const ClaimsHistory = () => {
                                     </td>
 
                                     {/* original amount with currency and fxSource badge */}
-                                    <td className="px-4 py-3 text-right text-gray-800">
+                                    <td className="px-4 py-3 text-left text-gray-800">
                                         {claim.currencyOriginal} {claim.totalOriginal.toFixed(2)}
                                         <span className={`ml-2 text-xs px-1.5 py-0.5 rounded font-medium
                                             ${claim.fxSource === 'API'
