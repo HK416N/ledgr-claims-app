@@ -3,6 +3,21 @@ const mongoose = require('mongoose');
 const Receipt = require('../models/Receipt');
 const category = require('../models/Category')
 
+const newClaim = async (req, res) => {
+    try { 
+        req.body.userId = req.user._id; // Set userId from the authenticated user
+        const reciept = await Receipt.create(req.body);
+        reciept._doc.userId = req.user // Ensure userId is included in the response
+        res.status(201).json({ success: true, data: reciept });
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            error: err.message,
+            code: 'SERVER_ERROR',
+        });
+    }
+}
+
 const getAllClaims = async (req, res) => {
     try {
         const receipts = await Receipt.find({ userId: req.user._id })
@@ -107,4 +122,80 @@ const getClaimById = async (req, res) => {
     }
 }
 
-module.exports = { getAllClaims, getClaimById };
+const updateClaim = async (req, res) => {
+    try {
+        const claim = await Receipt.findById(req.params.id);
+
+        if (!claim) {
+            return res.status(404).json({
+                success: false,
+                error: 'Claim not found',
+                code: 'CLAIM_NOT_FOUND',
+            });
+        }
+
+        if (claim.userId.toString() !== req.user._id) {
+            return res.status(403).json({
+                success: false,
+                error: 'Forbidden',
+                code: 'FORBIDDEN',
+            });
+        }
+        
+        const updatedClaim = await Receipt.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        ).populate('categoryId');
+
+        res.json({
+            success: true,
+            data: updatedClaim,
+        });
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            error: err.message,
+            code: 'SERVER_ERROR',
+        });
+    }
+}
+        
+const deleteClaim = async (req, res) => {
+    try {
+        const claim = await Receipt.findById(req.params.id);
+
+        if (!claim) {
+            return res.status(404).json({
+                success: false,
+                error: 'Claim not found',
+                code: 'CLAIM_NOT_FOUND',
+            });
+        }
+
+        if (claim.userId.toString() !== req.user._id) {
+            return res.status(403).json({
+                success: false,
+                error: 'Forbidden',
+                code: 'FORBIDDEN',
+            });
+        }
+
+        await Receipt.findByIdAndDelete(req.params.id);
+
+        res.json({
+            success: true,
+            message: 'Claim deleted successfully',
+        });
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            error: err.message,
+            code: 'SERVER_ERROR',
+        });
+    }
+}
+        
+
+
+module.exports = { getAllClaims, getClaimById, newClaim, updateClaim, deleteClaim };
