@@ -1,21 +1,52 @@
 const mongoose = require('mongoose');
 
 const Receipt = require('../models/Receipt');
-const category = require('../models/Category')
+const calculateSGD = require('../utils/calculateSGD');
 
-const newClaim = async (req, res) => {
-    try { 
-        req.body.userId = req.user._id; // Set userId from the authenticated user
-        const reciept = await Receipt.create(req.body);
-        reciept._doc.userId = req.user // Ensure userId is included in the response
-        res.status(201).json({ success: true, data: reciept });
-    } catch (err) {
+//renamed newClaim to createClaim, added sgd calculations
+//expect flat request from frontend 
+const createClaim = async (req, res) => {
+    try {
+        //ensure all required fields are filled - important fields date, 
+        // location, currencyOriginal, amount (totalOriginal), fxRate (api/manual it must be filled for calc) 
+        if (!req.body.date || !req.body.location || !req.body.currencyOriginal || !req.body.totalOriginal || !req.body.fxRate) {
+            return res.status(400).json({ success: false, error: 'Missing required fields' })
+        }
+
+        //calculate SGD for receipt
+        const totalSGD = calculateSGD(req.body.totalOriginal, req.body.fxRate);
+
+        //create receipt from flat body - match model
+        const receipt = await Receipt.create({
+            userId: req.user._id,
+            receiptNumber: req.body.receiptNumber || '',
+            date: req.body.date,
+            description: req.body.description || '',
+            location: req.body.location,
+            currencyOriginal: req.body.currencyOriginal,
+            totalOriginal: req.body.totalOriginal,
+            tax: req.body.tax || 0,
+            categoryId: req.body.categoryId || null,
+            //embedded obj
+            exchange: {
+                fxRate: req.body.fxRate,
+                convertedAmount: totalSGD,
+                fxSource: req.body.fxSource || 'MANUAL',
+                conversionDate: new Date(),
+            },
+        });
+
+        res.status(201).json({
+            success: true,
+        });
+
+    } catch (error) {
         res.status(500).json({
             success: false,
-            error: err.message,
+            error: error.message,
             code: 'SERVER_ERROR',
         });
-    }
+    };
 }
 
 const getAllClaims = async (req, res) => {
@@ -26,6 +57,7 @@ const getAllClaims = async (req, res) => {
             .lean()
             .exec();
 
+        //flatten for frontend
         const claims = receipts.map((receipt) => {
             return {
                 _id: receipt._id,
@@ -50,10 +82,10 @@ const getAllClaims = async (req, res) => {
 
         res.json({ success: true, data: claims });
 
-    } catch (err) {
+    } catch (error) {
         res.status(500).json({
             success: false,
-            error: err.message,
+            error: error.message,
             code: 'SERVER_ERROR',
         });
     }
@@ -87,6 +119,7 @@ const getClaimById = async (req, res) => {
                 })
         }
 
+        //flatten for frontend
         const claim = {
             _id: receipt._id,
             receiptNumber: receipt.receiptNumber,
@@ -112,15 +145,15 @@ const getClaimById = async (req, res) => {
             data: claim,
         })
 
-    } catch (err) {
+    } catch (error) {
 
         res.status(500).json({
             success: false,
-            error: err.message,
+            error: error.message,
             code: 'SERVER_ERROR',
         });
-    }
-}
+    };
+};
 
 const updateClaim = async (req, res) => {
     try {
@@ -132,7 +165,7 @@ const updateClaim = async (req, res) => {
                 error: 'Claim not found',
                 code: 'CLAIM_NOT_FOUND',
             });
-        }
+        };
 
         if (claim.userId.toString() !== req.user._id) {
             return res.status(403).json({
@@ -140,27 +173,49 @@ const updateClaim = async (req, res) => {
                 error: 'Forbidden',
                 code: 'FORBIDDEN',
             });
-        }
-        
-        const updatedClaim = await Receipt.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true }
-        ).populate('categoryId');
+        };
 
-        res.json({
-            success: true,
-            data: updatedClaim,
-        });
-    } catch (err) {
+        //added completed claims case
+        if(claim.status === 'COMPLETE') {
+            return res.status(403).json({
+                success: false,
+                error: 'Claim is complete',
+            });
+        };
+
+        //edit individual fields without PUT deleting all fields that the user did not enter anything into
+        if(receiptNumber !== undefined) {claim.receiptNumber = req.body.receiptNumber};
+        if(date !== undefined) {claim.date = req.body.date};
+        if(description !== undefined) {claim.description = req.body.description};
+        if(location !== undefined) {claim.location = req.body.location};
+        if(currencyOriginal !== undefined) {claim.currencyOriginal = req.body.currencyOriginal};
+        if(totalOriginal !== undefined) {claim.totalOriginal = req.body.totalOriginal};
+        if(tax !== undefined) {claim.tax = req.body.tax};
+        if(categoryId !== undefined) {claim.categoryId = req.body.categoryId};
+        if(status !== undefined) {claim.status = req.body.status};
+
+        
+        //defaults to API fx values
+        if (fxRate !== undefined) {
+            receipt.exchange.fxRate = fxRate;
+            receipt.exchange.fxSource = fxSource || receipt.exchange.fxSource;
+            receipt.exchange.convertedAmount = calculateSGD(receipt.totalOriginal, fxRate);
+            receipt.exchange.conversionDate = new Date();
+        }
+
+        await receipt.save();
+
+        res.json({ success: true });
+
+    } catch (error) {
         res.status(500).json({
             success: false,
-            error: err.message,
+            error: error.message,
             code: 'SERVER_ERROR',
         });
     }
 }
-        
+
 const deleteClaim = async (req, res) => {
     try {
         const claim = await Receipt.findById(req.params.id);
@@ -181,21 +236,31 @@ const deleteClaim = async (req, res) => {
             });
         }
 
+        //fix: cannot delete claim if completed - for record, audit
+        if (receipt.status === 'COMPLETE') {
+            return res.status(403).json({
+                success: false,
+                error:'Claim is complete',
+                code: 'CLAIM_IS_COMPLETE',
+            });
+        };
+
         await Receipt.findByIdAndDelete(req.params.id);
 
         res.json({
             success: true,
             message: 'Claim deleted successfully',
         });
-    } catch (err) {
+
+    } catch (error) {
         res.status(500).json({
             success: false,
-            error: err.message,
+            error: error.message,
             code: 'SERVER_ERROR',
         });
     }
 }
-        
 
 
-module.exports = { getAllClaims, getClaimById, newClaim, updateClaim, deleteClaim };
+
+module.exports = { getAllClaims, getClaimById, createClaim, updateClaim, deleteClaim };

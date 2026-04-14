@@ -20,6 +20,10 @@ export const getAllClaims = async () => {
 
     } catch (error) {
         console.error(error.message);
+        return {
+            success: false,
+            error: error.message,
+        }
     };
 };
 
@@ -29,11 +33,11 @@ export const getClaimById = async (claimId) => {
     const url = `${BASE_URL}/claims/${claimId}`
 
     try {
-        const response = await fetch(url,{
+        const response = await fetch(url, {
             headers: getAuthHeaders(),
         })
 
-        if (!response.ok) { 
+        if (!response.ok) {
             throw new Error(`Response status: ${response.status}`)
         };
 
@@ -41,76 +45,92 @@ export const getClaimById = async (claimId) => {
 
     } catch (error) {
         console.error(error.message);
+        return {
+            success: false,
+            error: error.message,
+        }
     };
 };
 
 //new
 export const createClaim = async (claimData) => {
-    
+
     const url = `${BASE_URL}/claims`
-    
+
     try {
-        const response = await fetch(url,{
+        const response = await fetch(url, {
             method: 'POST',
             headers: getAuthHeaders(),
-            body: JSON.stringify(claimData),    
+            body: JSON.stringify(claimData),
         });
-        
+
         if (!response.ok) {
             throw new Error(`Response status: ${response.status}`)
         };
-        
+
         return await response.json();
 
     } catch (error) {
         console.error(error.message);
-    }
-    
-}
+        return {
+            success: false,
+            error: error.message,
+        };
+    };
+
+};
 
 //edit
-export const updateClaim = async (claimId,updatedData) => {
-    
+export const updateClaim = async (claimId, updatedData) => {
+
     const url = `${BASE_URL}/claims/${claimId}`
-    
+
     try {
-        const response= await fetch(url, {
-            method:'PATCH',
+        const response = await fetch(url, {
+            method: 'PUT',
             headers: getAuthHeaders(),
             body: JSON.stringify(updatedData)
-    
+
         });
 
         if (!response.ok) {
-            throw new Error (`Response status: ${response.status}`)
+            throw new Error(`Response status: ${response.status}`)
         };
-        
+
         return await response.json();
-        
+
     } catch (error) {
         console.error(error.message);
+        return {
+            success: false,
+            error: error.message,
+        }
     };
 };
 
 //delete
 export const deleteClaim = async (claimId) => {
-    
+
     const url = `${BASE_URL}/claims/${claimId}`;
 
     try {
-        const response = await fetch (url, {
-            method:'DELETE',
+        const response = await fetch(url, {
+            method: 'DELETE',
             headers: getAuthHeaders(),
         });
 
-        if(!response.ok) {
+        if (!response.ok) {
             throw new Error(`Response status: ${response.status}`)
         };
-        
-        return await response.json()  
-    
+
+        return await response.json()
+
     } catch (error) {
-        console.error(error.message);        
+        console.error(error.message);
+        return {
+            success: false,
+            error: error.message,
+        };
     };
 
 };

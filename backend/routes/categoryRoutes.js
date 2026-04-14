@@ -4,5 +4,7 @@ const verifyToken = require('../middleware/verifyToken');
 const { getCategories } = require('../controllers/categoryController');
 
 router.get('/', verifyToken, getCategories);
+// router.post('/', createCategory);
+// router.delete('/:id', deleteCategory);
 
 module.exports = router;

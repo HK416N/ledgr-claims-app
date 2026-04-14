@@ -43,6 +43,11 @@ export const login = async (userData) => {
         
     } catch (error) {
         console.error(error.message);
+        return {
+            success: false,
+            error: error.message,
+        }
+        
     };
 };
 

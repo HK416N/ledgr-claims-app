@@ -213,7 +213,7 @@ QoL change (can be stretch goal): convert to local date format
 for: 
 
 - `POST /api/claims` 
-- `PUT /api/claims/:id`
+- `PUT /api/claims/:id` 
 
 ```json
 {
