@@ -40,7 +40,7 @@ const ClaimDetails = () => {
             </Link>
 
             {/* Card */}
-            <div className={`${sharedStyles.card} p-6 flex flex-col gap-6 items-center`}>
+            <div className={`${sharedStyles.card} p-6 flex flex-col gap-6`}>
 
                 {/* card header */}
                 <div className="flex items-start justify-between">

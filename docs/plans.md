@@ -14,7 +14,6 @@ or
 
 **Error**
 ```json
-{
     //error
 {
     "success": false,
