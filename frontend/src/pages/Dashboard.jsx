@@ -19,22 +19,26 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const claimsResult = await getAllClaims();
+                setIsLoading(true);
+
+                const [claimsResult, categoriesResult] = await Promise.all([
+                    getAllClaims(),
+                    getCategories(),
+                ]);
+
                 if (claimsResult?.success) {
                     setAllClaims(claimsResult.data);
-                    setIsLoading(false);
                 }
 
-                const categoriesResult = await getCategories();
                 if (categoriesResult?.success) {
                     setCategories(categoriesResult.data);
-                    setIsLoading(false);
                 }
 
             } catch (error) {
                 console.error(error);
+            } finally {
                 setIsLoading(false);
-            }
+            };
         };
         fetchData();
     }, []);

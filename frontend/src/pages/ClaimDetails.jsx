@@ -147,7 +147,7 @@ const ClaimDetails = () => {
                         <div className="flex items-center gap-2">
 
                             <span className="font-medium text-gray-800">
-                                {claim.currencyOriginal}
+                                {claim.currencyOriginal} {claim.totalOriginal.toFixed(2)}
                             </span>
                             <button className="text-gray-300 hover:text-gray-500"
                                 onClick={() => navigator.clipboard.writeText(

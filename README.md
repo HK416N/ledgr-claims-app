@@ -16,6 +16,8 @@ Phase 2: Image handling
 
 Phase 3: OCR via tesseract.js
 
+![An image of the Dashboard](./img/Dashboard-production.png)
+
 ## Current Scope - MVP
 
 The immediate deliverable focuses on **manual input of receipt data** rather than OCR or image uploads. This ensures:
@@ -136,13 +138,13 @@ As a user I want to:
 
 Project planning done with the assistance of Claude AI.
 
-Click [here](./docs/plans.md) for project plans
+Refer to [plans](./docs/plans.md)
 
 ---
 
 ## Wireframes
 
-wip
+Refer to [Wireframes](./docs/wireframes.md)
 
 ---
 

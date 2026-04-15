@@ -9,7 +9,8 @@ const createClaim = async (req, res) => {
     try {
         //ensure all required fields are filled - important fields date, 
         // location, currencyOriginal, amount (totalOriginal), fxRate (api/manual it must be filled for calc) 
-        if (!req.body.date || !req.body.location || !req.body.currencyOriginal || !req.body.totalOriginal || !req.body.fxRate) {
+        if (!req.body.date || !req.body.location || !req.body.currencyOriginal 
+            || !req.body.totalOriginal || !req.body.fxRate) {
             return res.status(400).json({ success: false, error: 'Missing required fields' })
         }
 
@@ -53,7 +54,7 @@ const getAllClaims = async (req, res) => {
     try {
         const receipts = await Receipt.find({ userId: req.user._id })
             .populate('categoryId')
-            .sort({ createdAt: -1 }) //https://mongoosejs.com/docs/api/query.html#Query.prototype.sort()
+            .sort({ createdAt: -1 })
             .lean()
             .exec();
 
@@ -62,7 +63,7 @@ const getAllClaims = async (req, res) => {
             return {
                 _id: receipt._id,
                 receiptNumber: receipt.receiptNumber,
-                date: receipt.date.toISOString().slice(0, -1), //remove Z refer to Date section of README
+                date: receipt.date.toISOString().slice(0, -1),                   //remove Z refer to Date section of README
                 description: receipt.description,
                 totalOriginal: receipt.totalOriginal,
                 currencyOriginal: receipt.currencyOriginal,
