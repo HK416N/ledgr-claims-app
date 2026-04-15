@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router";
-import { Eye, Trash2, Check } from "lucide-react";
-import { getAllClaims } from '../services/claimsService'
+import { Eye, Trash2, Check, AlertOctagon } from "lucide-react";
+import { getAllClaims, updateClaim } from '../services/claimsService'
 import { getCategories } from '../services/categorySerivce'
 import { sharedStyles } from "../constants/styles";
+import { toast } from "react-toastify";
 
 const Dashboard = () => {
     //data states
@@ -38,24 +39,36 @@ const Dashboard = () => {
         fetchData();
     }, []);
 
+    // for check mark button 
+    const handleComplete = async (claimId) => {
+        const result = await updateClaim(claimId, {status : 'COMPLETE'});
+        if (!result?.success) {
+            toast.error('Could not mark as complete.');
+            return;
+        };
+
+        setAllClaims(allClaims.filter((claim) => claim._id !== claimId));
+        toast.success('Claim marked as complete.');
+    };
+
     //filters
     //pending claims
     const pendingClaims = allClaims.filter((claim) => {
         return claim.status !== 'COMPLETE';
-    })
+    });
 
     //location
     const locationFiltered = pendingClaims.filter((claims) => {
         if (locationFilter === 'all') return true;
         return claims.location === locationFilter;
-    })
+    });
 
     //category
     const categoryFiltered = locationFiltered.filter((claim) => {
         if (categoryFilter === 'all') return true;
         if (categoryFilter === 'none') return !claim.categoryId;
         return claim.categoryId === categoryFilter;
-    })
+    });
 
     //search text
     const filteredClaims = categoryFiltered.filter((claim) => {
@@ -193,7 +206,9 @@ const Dashboard = () => {
                                     <td className="px-4 py-3">
                                         <div className="flex items-center gap-4">
                                             {/* completed - wip */}
-                                            <button className="text-gray-400 hover:text-green-600">
+                                            <button className="text-gray-400 hover:text-green-600"
+                                            onClick={()=>handleComplete(claim._id)}
+                                            >
                                                 <Check size={15}></Check>
                                             </button>
 

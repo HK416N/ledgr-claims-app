@@ -183,27 +183,43 @@ const updateClaim = async (req, res) => {
             });
         };
 
+ 
+        const {
+            receiptNumber,
+            date,
+            description,
+            location,
+            currencyOriginal,
+            totalOriginal,
+            tax,
+            categoryId,
+            status,
+            fxRate,
+            fxSource,
+        } = req.body;
+
+
         //edit individual fields without PUT deleting all fields that the user did not enter anything into
-        if(receiptNumber !== undefined) {claim.receiptNumber = req.body.receiptNumber};
-        if(date !== undefined) {claim.date = req.body.date};
-        if(description !== undefined) {claim.description = req.body.description};
-        if(location !== undefined) {claim.location = req.body.location};
-        if(currencyOriginal !== undefined) {claim.currencyOriginal = req.body.currencyOriginal};
-        if(totalOriginal !== undefined) {claim.totalOriginal = req.body.totalOriginal};
-        if(tax !== undefined) {claim.tax = req.body.tax};
-        if(categoryId !== undefined) {claim.categoryId = req.body.categoryId};
-        if(status !== undefined) {claim.status = req.body.status};
+        if(receiptNumber !== undefined) {claim.receiptNumber = receiptNumber};
+        if(date !== undefined) {claim.date =date};
+        if(description !== undefined) {claim.description = description};
+        if(location !== undefined) {claim.location = location};
+        if(currencyOriginal !== undefined) {claim.currencyOriginal = currencyOriginal};
+        if(totalOriginal !== undefined) {claim.totalOriginal = totalOriginal};
+        if(tax !== undefined) {claim.tax = tax};
+        if(categoryId !== undefined) {claim.categoryId = categoryId};
+        if(status !== undefined) {claim.status = status};
 
         
         //defaults to API fx values
         if (fxRate !== undefined) {
-            receipt.exchange.fxRate = fxRate;
-            receipt.exchange.fxSource = fxSource || receipt.exchange.fxSource;
-            receipt.exchange.convertedAmount = calculateSGD(receipt.totalOriginal, fxRate);
-            receipt.exchange.conversionDate = new Date();
+            claim.exchange.fxRate = fxRate;
+            claim.exchange.fxSource = fxSource || claim.exchange.fxSource;
+            claim.exchange.convertedAmount = calculateSGD(claim.totalOriginal, fxRate);
+            claim.exchange.conversionDate = new Date();
         }
 
-        await receipt.save();
+        await claim.save();
 
         res.json({ success: true });
 
@@ -237,7 +253,7 @@ const deleteClaim = async (req, res) => {
         }
 
         //fix: cannot delete claim if completed - for record, audit
-        if (receipt.status === 'COMPLETE') {
+        if (claim.status === 'COMPLETE') {
             return res.status(403).json({
                 success: false,
                 error:'Claim is complete',
