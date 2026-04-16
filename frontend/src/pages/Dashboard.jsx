@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router";
 import { Eye, Trash2, Check, AlertOctagon } from "lucide-react";
-import { getAllClaims, updateClaim } from '../services/claimsService'
+import { deleteClaim, getAllClaims, updateClaim } from '../services/claimsService'
 import { getCategories } from '../services/categorySerivce'
 import { sharedStyles } from "../constants/styles";
 import { toast } from "react-toastify";
@@ -54,6 +54,19 @@ const Dashboard = () => {
         setAllClaims(allClaims.filter((claim) => claim._id !== claimId));
         toast.success('Claim marked as complete.');
     };
+
+    const handleDelete = async (claimId) => {
+        const result = await deleteClaim(claimId);
+
+        if (!result?.success) {
+            toast.error('Could not delete claim.');
+            return;
+        };
+
+        setAllClaims(allClaims.filter((claim) => claim._id !== claimId));
+        toast.success('Claim deleted successfully.');
+    }
+
 
     //filters
     //pending claims
@@ -223,7 +236,9 @@ const Dashboard = () => {
                                             </Link>
 
                                             {/* delete claim - wip */}
-                                            <button className="text-gray-400 hover:text-red-500">
+                                            <button className="text-gray-400 hover:text-red-500"
+                                            onClick={()=>handleDelete(claim._id)}>
+                                                
                                                 <Trash2 size={15}></Trash2>
                                             </button>
                                         </div>

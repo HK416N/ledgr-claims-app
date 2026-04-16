@@ -23,7 +23,7 @@ const NewClaim = () => {
         currencyOriginal: 'SGD',
         totalOriginal: '',
         tax: '',
-        fxRate: '',
+        fxRate: '1',
         fxSource: 'MANUAL',
     });
 

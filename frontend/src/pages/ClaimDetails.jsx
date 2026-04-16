@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link , useNavigate} from 'react-router-dom';
 import { ArrowLeft, Copy } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { getClaimById } from '../services/claimsService';
 import { sharedStyles } from '../constants/styles';
-
+import { deleteClaim } from '../services/claimsService';
 
 const ClaimDetails = () => {
     const { id } = useParams();
     const [claim, setClaim] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchClaim = async () => {
@@ -23,6 +24,16 @@ const ClaimDetails = () => {
         };
         fetchClaim();
     }, [id]);
+
+    const handleDelete = async () => {
+        const result = await deleteClaim(id);
+        if (!result?.success) {
+            toast.error('Could not delete claim.');
+            return;
+        }
+        toast.success('Claim deleted successfully.');
+        navigate('/dashboard')
+    };
 
     if (isLoading) return <p className="text-sm text-gray-500">Loading...</p>;
     if (!claim) return <p className="text-sm text-red-500">Claim not found</p>;
@@ -70,7 +81,7 @@ const ClaimDetails = () => {
                         <button className="flex items-center gap-1 
                         bg-red-500 text-white rounded 
                         px-3 py-1.5 text-sm 
-                        hover:bg-red-600">
+                        hover:bg-red-600" onClick={()=>handleDelete(id)}>
                             Delete
                         </button>
                     </div>
