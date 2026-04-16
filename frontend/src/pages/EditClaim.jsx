@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { updateClaim, getClaimById } from "../services/claimsService";
 import { toast } from "react-toastify";
 import { useNavigate, useParams} from "react-router";
-import ClaimsForm from "../components/claimForm";
+import ClaimsForm from "../components/ClaimsForm";
 
 
-const UpdateClaim = () => {
+const EditClaim = () => {
   
       const navigate= useNavigate();
       
@@ -13,7 +13,7 @@ const UpdateClaim = () => {
       const [categoryInput, setCategoryInput] = useState('');
       const [isLoading, setIsLoading] = useState(false);
       const { id } = useParams();
-      const [formData,setFormData] = useState({
+      const [FormData,setFormData] = useState({
           receiptNumber: '',
           date: '',
           description: '',
@@ -24,41 +24,49 @@ const UpdateClaim = () => {
           fxRate: '',
           fxSource: 'MANUAL',
       });
-      
-      const getClaimDetails = async () => {
-        const result = await getClaimById(id);
+      const title = 'Edit Claim';        
 
-        if(!result?.success) {
-            toast.error(result?.error || 'Failed to fetch claim details.');
-            return;
-        };
+      useEffect(() => {
+        const getClaimDetails = async () => {
+            try {
+                setIsLoading(true);
+                const result = await getClaimById(id);
+                console.log('Claim details fetched:', result);
+                if (result?.success) {
+                    const claim = result.data;
+                    setFormData({
+                        receiptNumber: claim.receiptNumber || '',
+                        date: claim.date ? claim.date.split('T')[0] : '',
+                        description: claim.description || '',
+                        location: claim.location || 'SINGAPORE',
+                        currencyOriginal: claim.currencyOriginal || 'SGD',
+                        totalOriginal: claim.totalOriginal ? claim.totalOriginal.toString() : '',
+                        tax: claim.tax ? claim.tax.toString() : '',
+                        fxRate: claim.fxRate ? claim.fxRate.toString() : '',
+                        fxSource: claim.fxSource || 'MANUAL',
+                    });
+                } else {
+                    toast.error(result?.error || 'Failed to fetch claim details.');
+                }
 
-
-        const claim = result.data;
-        setFormData({
-            receiptNumber: claim.receiptNumber || '',
-            date: claim.date ? claim.date.split('T')[0] : '',
-            description: claim.description || '',
-            location: claim.location || 'SINGAPORE',
-            currencyOriginal: claim.currencyOriginal || 'SGD',
-            totalOriginal: claim.totalOriginal ? claim.totalOriginal.toString() : '',
-            tax: claim.tax ? claim.tax.toString() : '',
-            fxRate: claim.fxRate ? claim.fxRate.toString() : '',
-            fxSource: claim.fxSource || 'MANUAL',
-        });
+            } catch (error) {
+                toast.error(error?.message || 'An error occurred while fetching claim details.');
+            } finally {
+                setIsLoading(false);
+            }
       }
-
-      getClaimDetails(id)
+      getClaimDetails()
+      }, [id]);
 
       const handleChange = (event) => {
-          setFormData({ ...formData, [event.target.name]: event.target.value});
+          setFormData({ ...FormData, [event.target.name]: event.target.value});
       };
   
       //compute totalSGD
       const totalSGD =
-      formData.totalOriginal && formData.fxRate 
+      FormData.totalOriginal && FormData.fxRate 
       ? (
-          Math.round(parseFloat(formData.totalOriginal) * parseFloat(formData.fxRate) *100)/100).toFixed(2) 
+          Math.round(parseFloat(FormData.totalOriginal) * parseFloat(FormData.fxRate) *100)/100).toFixed(2) 
       : (
           '—'
       )
@@ -69,7 +77,7 @@ const UpdateClaim = () => {
       const handleSubmit = async (event) => {
           event.preventDefault();
   
-          if(!formData.fxRate) {
+          if(!FormData.fxRate) {
               toast.error('Please enter an FX rate');
               return;
           };
@@ -77,10 +85,10 @@ const UpdateClaim = () => {
           setIsLoading(true);
           
           const result = await updateClaim(id, {
-              ...formData,
-              totalOriginal: parseFloat(formData.totalOriginal),
-              tax: formData.tax ? parseFloat(formData.tax) : 0,
-              fxRate: parseFloat(formData.fxRate),
+              ...FormData,
+              totalOriginal: parseFloat(FormData.totalOriginal),
+              tax: FormData.tax ? parseFloat(FormData.tax) : 0,
+              fxRate: parseFloat(FormData.fxRate),
               categoryId: null,
           });
   
@@ -96,9 +104,9 @@ const UpdateClaim = () => {
       };
     return (
         <div>
-            <ClaimsForm FormData={FormData} handleSubmit={handleSubmit} handleChange={handleChange} isLoading={isLoading} categoryInput={categoryInput} totalSGD={totalSGD} handleCategoryChange={handleCategoryChange} />
+            <ClaimsForm title={title} FormData={FormData} handleSubmit={handleSubmit} handleChange={handleChange} isLoading={isLoading} categoryInput={categoryInput} totalSGD={totalSGD} handleCategoryChange={handleCategoryChange} />
         </div>
     );
 };
 
-export default UpdateClaim;
+export default EditClaim;

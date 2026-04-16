@@ -5,13 +5,14 @@ import { CURRENCIES } from "../constants/currencies";
 
 const DUMMY_CATEGORIES = ['Meals', 'Transport', 'Accommodation', 'Entertainment'];
 
-const ClaimForm = ({ formData, handleChange, handleSubmit, isLoading , categoryInput, totalSGD , handleCategoryChange}) => {
+const ClaimsForm = ({ title, FormData, handleChange, handleSubmit, isLoading , categoryInput, totalSGD , handleCategoryChange}) => {
 
 
     return (
         <div className="flex flex-col gap-6 max-w-2xl">
             <div>
-                <h1 className={sharedStyles.pageTitle}>New Claim</h1>
+                {/* -- Title to be made dynamic based on whether it's New or Edit -- */}
+                <h1 className={sharedStyles.pageTitle}>{title}</h1>
                 <p className="text-sm text-gray-500 mt-1">Fill in the details for your expense claim</p>
             </div>
 
@@ -25,7 +26,7 @@ const ClaimForm = ({ formData, handleChange, handleSubmit, isLoading , categoryI
                             className={sharedStyles.input}
                             type="text"
                             name="receiptNumber"
-                            value={formData.receiptNumber}
+                            value={FormData.receiptNumber}
                             onChange={handleChange}
                         />
                     </div>
@@ -36,7 +37,7 @@ const ClaimForm = ({ formData, handleChange, handleSubmit, isLoading , categoryI
                             className={sharedStyles.input}
                             type="date" //https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/date
                             name="date"
-                            value={formData.date}
+                            value={FormData.date}
                             onChange={handleChange}
                             required
                         />
@@ -50,7 +51,7 @@ const ClaimForm = ({ formData, handleChange, handleSubmit, isLoading , categoryI
                         className={sharedStyles.input}
                         type="text"
                         name="description"
-                        value={formData.description}
+                        value={FormData.description}
                         onChange={handleChange}
                     />
                 </div>
@@ -62,7 +63,7 @@ const ClaimForm = ({ formData, handleChange, handleSubmit, isLoading , categoryI
                         <select
                             className={sharedStyles.input}
                             name="location"
-                            value={formData.location}
+                            value={FormData.location}
                             onChange={handleChange}
                         >
                             <option value="SINGAPORE">Singapore</option>
@@ -102,7 +103,7 @@ const ClaimForm = ({ formData, handleChange, handleSubmit, isLoading , categoryI
                         <select
                             className={sharedStyles.input}
                             name="currencyOriginal"
-                            value={formData.currencyOriginal}
+                            value={FormData.currencyOriginal}
                             onChange={handleChange}
                         >
                             {CURRENCIES.map((c) => (
@@ -117,7 +118,7 @@ const ClaimForm = ({ formData, handleChange, handleSubmit, isLoading , categoryI
                             className={sharedStyles.input}
                             type="number"
                             name="totalOriginal"
-                            value={formData.totalOriginal}
+                            value={FormData.totalOriginal}
                             onChange={handleChange}
                             min="0"
                             step="0.01" //https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/step
@@ -131,7 +132,7 @@ const ClaimForm = ({ formData, handleChange, handleSubmit, isLoading , categoryI
                             className={sharedStyles.input}
                             type="number"
                             name="tax"
-                            value={formData.tax}
+                            value={FormData.tax}
                             onChange={handleChange}
                             min="0"
                             step="0.01"
@@ -147,7 +148,7 @@ const ClaimForm = ({ formData, handleChange, handleSubmit, isLoading , categoryI
                             className={sharedStyles.input}
                             type="number"
                             name="fxRate"
-                            value={formData.fxRate}
+                            value={FormData.fxRate}
                             onChange={handleChange}
                             step="0.000001"
                             placeholder="e.g. 0.7401"
@@ -187,4 +188,4 @@ const ClaimForm = ({ formData, handleChange, handleSubmit, isLoading , categoryI
 };
 
 
-export default ClaimForm;
+export default ClaimsForm;

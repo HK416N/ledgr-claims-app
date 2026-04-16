@@ -11,9 +11,10 @@ import Dashboard from './pages/Dashboard';
 import ClaimsHistory from './pages/ClaimsHistory';
 import ClaimDetails from './pages/ClaimDetails';
 import NewClaim from './pages/NewClaim';
+import EditClaim from './pages/EditClaim';
 
 //IMPORT EDIT CLAIMS AND REMOVE THIS WHEN DONE WITH EDITCALIM
-const EditClaim = () => <p>Edit Claim — coming soon</p>;
+//const EditClaim = () => <p>Edit Claim — coming soon</p>;
 
 const App = () => {
   return (
